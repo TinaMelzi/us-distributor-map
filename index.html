@@ -60,7 +60,7 @@ async function loadSheetData() {
   const text = await res.text();
 
   const rows = text.trim().split('\n');
-  const headers = rows[0].split(',');
+  const headers = rows[0].split(/,|\\t/);
 
   const stateIdx = headers.indexOf('state');
   const distIdx = headers.indexOf('distributor');
@@ -68,7 +68,7 @@ async function loadSheetData() {
   distributorData = {};
 
   for (let i = 1; i < rows.length; i++) {
-    const cols = rows[i].split(',');
+    const cols = rows[i].split(/,|\\t/);
     const state = cols[stateIdx].trim();
     const distributor = cols[distIdx].trim();
     distributorData[state] = distributor;
