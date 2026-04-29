@@ -58,6 +58,7 @@ DATA LOADING (Google Sheets CSV)
 async function loadSheetData() {
   const res = await fetch(SHEET_CSV_URL);
   const text = await res.text();
+  console.log(text);
 
   const rows = text.trim().split('\n');
   const headers = rows[0].split(/,|\\t/);
