@@ -58,22 +58,44 @@ DATA LOADING (Google Sheets CSV)
 async function loadSheetData() {
   const res = await fetch(SHEET_CSV_URL);
   const text = await res.text();
-  console.log(text);
 
-  const rows = text.trim().split('\n');
-  const headers = rows[0].split(/,|\\t/);
+  console.log("RAW CSV:", text);
 
-  const stateIdx = headers.indexOf('state');
-  const distIdx = headers.indexOf('distributor');
+  const rows = text
+    .trim()
+    .split("\n")
+    .map(r => r.trim())
+    .filter(r => r.length > 0);
+
+  // --- SAFE HEADER PARSING ---
+  const headers = rows[0]
+    .split(/,|\t/)
+    .map(h => h.trim().toLowerCase());
+
+  const stateIdx = headers.findIndex(h => h === "state");
+  const distIdx = headers.findIndex(h => h === "distributor");
+
+  if (stateIdx === -1 || distIdx === -1) {
+    console.error("Missing required columns. Headers found:", headers);
+    return;
+  }
 
   distributorData = {};
 
+  // --- SAFE ROW PARSING ---
   for (let i = 1; i < rows.length; i++) {
-    const cols = rows[i].split(/,|\\t/);
-    const state = cols[stateIdx].trim();
-    const distributor = cols[distIdx].trim();
+    const cols = rows[i].split(/,|\t/).map(c => c.trim());
+
+    const state = cols[stateIdx];
+    const distributor = cols[distIdx];
+
+    // 🚨 prevent crash + skip bad rows
+    if (!state || !distributor) continue;
+
     distributorData[state] = distributor;
   }
+
+  console.log("Loaded data:", distributorData);
 }
 
 /*********************************************************
