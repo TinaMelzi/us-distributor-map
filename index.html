@@ -101,14 +101,24 @@ async function loadSheetData() {
 /*********************************************************
 COLORING
 *********************************************************/
+const distributorColors = {};
+const palette = [
+  "#1f77b4", "#ff7f0e", "#2ca02c",
+  "#d62728", "#9467bd", "#8c564b",
+  "#e377c2", "#7f7f7f", "#bcbd22",
+  "#17becf"
+];
+
 function getColor(distributor) {
-  const colors = {
-    "Distributor A": "#1f77b4",
-    "Distributor B": "#ff7f0e",
-    "Distributor C": "#2ca02c",
-    "default": "#cccccc"
-  };
-  return colors[distributor] || colors.default;
+  if (!distributor) return "#cccccc";
+
+  // assign color if not already assigned
+  if (!distributorColors[distributor]) {
+    const index = Object.keys(distributorColors).length;
+    distributorColors[distributor] = palette[index % palette.length];
+  }
+
+  return distributorColors[distributor];
 }
 
 function style(feature) {
